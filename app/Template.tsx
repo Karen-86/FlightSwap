@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Navbar, Footer, InputDemo, InputCalendarDemo, ComboboxDemo } from "@/components/index.js";
 import Image from "next/image";
 import localData from "@/localData";
@@ -10,7 +10,18 @@ import { motion } from "framer-motion";
 
 const { heroCoverImage, heroCoverMobileImage, whatsappIcon, clouds1Image, VideoSettingsImage, VideoThumbnailImage } =
   localData.images;
-const { arrowRightIcon, userIcon, phoneIcon, emailIcon, flowerIcon, patternIcon, playIcon, circleIcon, barIcon } = localData.svgs;
+const {
+  arrowRightIcon,
+  userIcon,
+  phoneIcon,
+  emailIcon,
+  flowerIcon,
+  patternIcon,
+  playIcon,
+  airplaneLeftIcon,
+  airplaneRightIcon,
+  barIcon,
+} = localData.svgs;
 
 const Template = () => {
   return (
@@ -38,6 +49,7 @@ const Template = () => {
       </header>
       <main className="home-page">
         <InstructionSection />
+        <VouchersSection />
       </main>
       <Footer />
       <style>
@@ -516,9 +528,31 @@ const ShowcaseSection = () => {
 };
 
 const InstructionSection = () => {
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isOverlayHidden, setIsOverlayHidden] = useState(false);
   const [inView1, setIsInView1] = useState(false);
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const handlePlayPause = () => {
+    if (!videoRef.current) return;
+
+    if (isVideoPlaying) {
+      videoRef.current.pause();
+      setIsVideoPlaying(false);
+    } else {
+      videoRef.current.play();
+      setIsVideoPlaying(true);
+    }
+  };
+
   return (
-    <motion.section className="instruction " viewport={{ amount: 0.3 }} onViewportEnter={() => setIsInView1(true)}>
+    <motion.section className="instruction !pb-0" viewport={{ amount: 0.3 }} onViewportEnter={() => setIsInView1(true)}>
+      <div className="absolute hidden xl:block w-[7vw] [@media(min-width:1910px)]:w-auto [&>svg]:w-full">{airplaneLeftIcon}</div>
+      <div className="absolute hidden xl:block w-[7vw] [@media(min-width:1910px)]:w-auto [&>svg]:w-full right-0">
+        {airplaneRightIcon}
+      </div>
+
       <div className="container">
         <div className="shadow flex w-fit mx-auto items-center text-sm gap-2 rounded-full bg-white py-[6px] px-[13px] text-primary mb-[0.7rem]">
           {flowerIcon}
@@ -530,7 +564,7 @@ const InstructionSection = () => {
         </h2>
 
         <div
-          className={`video-wrapper bg-white shadow-xs rounded-2xl p-[5px] sm:p-[10px] ${inView1 ? "lazy-animate" : ""}`}
+          className={`video-wrapper bg-white shadow-xs rounded-2xl p-[5px] sm:p-[12px] ${inView1 ? "lazy-animate" : ""}`}
           data-lazy="fade"
         >
           <div className="video-settings">
@@ -541,16 +575,65 @@ const InstructionSection = () => {
             </div> */}
             <span className=" block py-[0.1%] px-3 mb-[0.4%]">{barIcon}</span>
           </div>
-          <div className="h-0 pt-[56.25%] border relative rounded-2xl overflow-hidden cursor-pointer group">
-            <Image fill={true} src={VideoThumbnailImage} alt="image" className=" absolute top-0 left-0 w-full h-full" />
-            <div className="overlay absolute top-0 left-0 w-full h-full bg-[rgba(255,255,255,0.03)] duration-300 opacity-0 group-hover:opacity-100"></div>
-            <div className=" will-change-transform group-active:scale-105 group-hover:scale-110 duration-300 absolute top-1/2 left-1/2 -translate-1/2 w-[40px] h-[40px] sm:w-[120px] sm:h-[120px] rounded-full bg-white/60 flex items-center justify-center [&>svg]:w-[12px] sm:[&>svg]:w-[36px]">
-              {playIcon}
+          <div className="h-0 pt-[56.25%] shadow-sm relative rounded-2xl overflow-hidden cursor-pointer group bg-black">
+            <video
+              ref={videoRef}
+              className="absolute top-0 left-0 w-full h-full object-cover"
+              // poster="/poster-image.jpg"
+              onPlay={() => setIsVideoPlaying(true)}
+              onPause={() => setIsVideoPlaying(false)}
+              controls
+              // autoPlay
+              loop
+              muted
+            >
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+            </video>
+            {/* {isOverlayHidden && (
+              <iframe
+                className="absolute inset-0 w-full h-full z-10"
+                src={`https://www.youtube.com/embed/${'WoTFTtw04dQ'}?enablejsapi=1`}
+                title="YouTube video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            )} */}
+            <div
+              onClick={() => {
+                if (!videoRef.current) return;
+                videoRef.current.play();
+                setIsVideoPlaying(true);
+                setIsOverlayHidden(true);
+              }}
+              className={`absolute w-full h-full top-0 left-0 ${
+                isOverlayHidden ? "opacity-0 pointer-events-none" : ""
+              } duration-300`}
+            >
+              <Image fill={true} src={VideoThumbnailImage} alt="image" className=" absolute top-0 left-0 w-full h-full" />
+              <div className="overlay absolute top-0 left-0 w-full h-full bg-[rgba(255,255,255,0.03)] duration-300 opacity-0 group-hover:opacity-100"></div>
+              <div className="will-change-transform group-active:scale-105 group-hover:scale-110 duration-300 absolute top-1/2 left-1/2 -translate-1/2 w-[40px] h-[40px] sm:w-[120px] sm:h-[120px] rounded-full bg-white/60 flex items-center justify-center [&>svg]:w-[12px] sm:[&>svg]:w-[36px]">
+                {playIcon}
+              </div>
             </div>
           </div>
         </div>
       </div>
     </motion.section>
+  );
+};
+
+const VouchersSection = () => {
+  return (
+    <section>
+      <div className="container">
+        <h2 className="h2 text-center w-fit mx-auto relative !text-xl sm:!text-3xl max-w-[830px] leading-[1.6]">
+          We buy unused vouchers before they <span className="text-primary">
+            expire and turn them into real flight savings
+          </span>
+        </h2>
+      </div>
+    </section>
   );
 };
 
