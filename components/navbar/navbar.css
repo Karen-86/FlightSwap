@@ -1,0 +1,9 @@
+ .partners-image {
+        display: none
+    }
+
+@media(min-width: 440px) {
+    .partners-image {
+        display: block
+    }
+}
