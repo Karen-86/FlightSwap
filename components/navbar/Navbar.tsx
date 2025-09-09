@@ -35,7 +35,7 @@ const { logo, partnersImage, whatsappIcon } = localData.images;
 
 export default function Navbar() {
   return (
-    <nav className="navbar relative z-2 mb-[1rem] sm:mb-[2.5rem]">
+    <nav className="navbar relative z-2 mb-[1rem] sm:mb-[1.5rem] 4xl:mb-[2.5rem]">
       <div className="container">
         <div className="inset-0 backdrop-blur-md bg-white/60 rounded-lg flex flex-wrap gap-3 items-center justify-between px-[15px] py-[10px]  border border-[rgba(255,255,255,0.6)]">
           <div className="bg-[rgb(227,217,221)] sm:bg-[rgb(242,230,237)] lg:bg-[rgb(209,217,236)] ">

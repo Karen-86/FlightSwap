@@ -28,32 +28,30 @@ const outfit = Outfit({
   variable: "--font-outfit",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://flightswap.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://flight-swap.vercel.app";
 
 export const metadata: Metadata = {
-  title: "Flight Swap",
+  title: "Cheap Delta & American Airlines Tickets – Up to 40% Off | FlightSwap",
   description:
-    "Up to 40% Off | Delta & American Airlines | Exclusive discounts powered by unused airline vouchers. Real tickets. Fast support onWhatsApp.",
+    "Buy Delta & American Airlines flights up to 40% cheaper using unused vouchers. Sell your soon-to-expire voucher for cash. Safe, fast, WhatsAppsupport",
   icons: {
     icon: [{ rel: "icon", url: "/assets/images/favicon.png" }],
     apple: "/assets/images/favicon.png",
   },
   openGraph: {
-    title: "Flight Swap",
-    description:
-      "Up to 40% Off | Delta & American Airlines | Exclusive discounts powered by unused airline vouchers. Real tickets. Fast support onWhatsApp.",
+    title: "FlightSwap — Save up to 40% on Flights",
+    description: "Real tickets. Real savings. Buy with vouchers or sell yours for cash.",
     url: `${siteUrl}`,
-    siteName: "Your Website Name",
-    images: [`${siteUrl}/assets/images/og-image.png`], //recomened sizes 1200x630, 1080 × 566, 600 × 315 | aspect ratio 1.91:1
+    siteName: "FlightSwap",
+    images: [`${siteUrl}/assets/images/rest/hero-cover.jpg`], //recomened sizes 1200x630, 1080 × 566, 600 × 315 | aspect ratio 1.91:1
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Flight Swap",
-    description:
-      "Up to 40% Off | Delta & American Airlines | Exclusive discounts powered by unused airline vouchers. Real tickets. Fast support onWhatsApp.",
-    images: [`${siteUrl}/assets/images/og-image.png`], //recomened sizes 1200x630, 1080 × 566, 600 × 315 | aspect ratio 1.91:1
+    title: "FlightSwap — Save up to 40% on Flights",
+    description: "Real tickets. Real savings. Buy with vouchers or sell yours for cash.",
+    images: [`${siteUrl}/assets/images/rest/hero-cover.jpg`], //recomened sizes 1200x630, 1080 × 566, 600 × 315 | aspect ratio 1.91:1
   },
 };
 
@@ -66,9 +64,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={` ${urbanist.variable} ${jost.variable} ${carterOne.variable} ${outfit.variable}  antialiased`}>
         <Provider>
-
           {children}
-          <Toaster/>
+          <Toaster />
         </Provider>
       </body>
     </html>

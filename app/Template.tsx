@@ -6,34 +6,59 @@ import Image from "next/image";
 import localData from "@/localData";
 import { Button } from "@/components/ui/button";
 import { useGlobalContext } from "@/context";
+import { motion } from "framer-motion";
 
-const { heroCoverImage, heroCoverMobileImage, whatsappIcon } = localData.images;
-const { arrowRightIcon, userIcon, phoneIcon, emailIcon, calendarIcon } = localData.svgs;
+const { heroCoverImage, heroCoverMobileImage, whatsappIcon, clouds1Image, VideoSettingsImage, VideoThumbnailImage } =
+  localData.images;
+const { arrowRightIcon, userIcon, phoneIcon, emailIcon, flowerIcon, patternIcon, playIcon, circleIcon, barIcon } = localData.svgs;
 
 const Template = () => {
   return (
     <>
-      <header className="hero sm:min-h-[100vh] pt-[20px] lg:pt-[40px]  relative flex flex-col">
+      <header
+        className=" hero sm:min-h-[100vh] pt-[20px] lg:pt-[40px]  relative flex flex-col bg-no-repeat bg-bottom bg-contain "
+        style={{ backgroundImage: `url(${clouds1Image})` }}
+      >
+        <div className="overlay absolute top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.2)] sm:hidden -z-1"></div>
         <Image
           fill={true}
           src={heroCoverImage}
           alt="background image"
-          className="absolute top-0 left-0 w-full h-full object-cover hidden sm:block"
+          className="-z-1 absolute top-0 left-0 w-full h-full object-cover hidden sm:block"
         />
         <Image
           fill={true}
           src={heroCoverMobileImage}
           alt="background image"
-          className="absolute top-0 left-0 w-full h-full object-cover object-top sm:hidden"
+          className="-z-1 absolute top-0 left-0 w-full h-full object-cover  sm:hidden"
         />
         <Navbar />
         <ShowcaseSection />
         <FormBlock />
       </header>
       <main className="home-page">
-        <AboutSection />
+        <InstructionSection />
       </main>
       <Footer />
+      <style>
+        {`
+          @media(min-width: 460px) {
+            .hero {
+              margin-bottom: 400px;
+            }
+          }
+          @media(min-width: 640px) {
+            .hero {
+              margin-bottom: 270px;
+            }
+          }
+          @media(min-width: 1024px) {
+            .hero {
+              margin-bottom: 180px;
+            }
+          }
+        `}
+      </style>
     </>
   );
 };
@@ -277,10 +302,10 @@ const FormBlock = () => {
 
   return (
     <>
-      <div>
+      <div className="form-block">
         <div className="container">
-          <div className="relative h-[200px]">
-            <div className="absolute w-full bottom-0 right-0 translate-y-[410px] sm:translate-y-[50%] px-[10px] sm:px-[20px] py-[20px]   min-h-[200px] bg-white/60 backdrop-blur-md rounded-3xl transform-y-100 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
+          <div className="relative min-h-[200px]">
+            <div className="form-block-content my-[3rem] sm:m-0 w-full top-[20px] sm:top-[auto] sm:bottom-0 right-0  sm:translate-y-[50%] px-[10px] sm:px-[20px] py-[20px]   min-h-[200px] bg-white/60 backdrop-blur-md rounded-3xl transform-y-100 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
               <div className="border flex relative border-white rounded-full bg-white max-w-[330px]  mx-auto mb-[2rem]">
                 <button
                   className={`flex-1 relative z-2 p-2 cursor-pointer duration-300 ${active == "left" ? "text-white" : ""}`}
@@ -365,7 +390,7 @@ const FormBlock = () => {
                   <input type="text" name="to" defaultValue={state.departure} className="hidden" />
 
                   <InputCalendarDemo
-                    className={`!mb-0 ${active == "right" ? "hidden" : ""}`}
+                    className={`!mb-0 duration-300 ${active == "right" ? "opacity-30 pointer-events-none" : ""}`}
                     name="return"
                     placeholder="Date"
                     label="Return"
@@ -437,9 +462,13 @@ const FormBlock = () => {
       <style>
         {`
           @media(min-width: 460px) {
+            .form-block-content {
+              position: absolute;
+            }
             .field-group {
               grid-template-columns: 1fr 1fr;
             }
+            
           }
           @media(min-width: 1024px) {
             .field-group {
@@ -453,12 +482,25 @@ const FormBlock = () => {
 };
 
 const ShowcaseSection = () => {
+  const [inView1, setIsInView1] = useState(false);
+
   return (
-    <div className="showcase flex-1">
+    <motion.div className="showcase flex-1" viewport={{ amount: 0.3 }} onViewportEnter={() => setIsInView1(true)}>
       <div className="container relative">
         <h1 className="text-6xl text-white font-urbanist font-bold  leading-[0.7] sm:leading-[1] text-center sm:text-left max-w-[400px] mx-auto sm:max-w-none mb-[1rem]">
-          <span className="text-[2.188rem] sm:text-[4rem] lg:text-[6.188rem]  mr-3">Up to 40% Off</span>
-          <span className="text-[2.188rem] sm:text-[3rem] lg:text-[4.063rem] text-right sm:block">Delta & American Airlines</span>
+          <span
+            className={`text-[2.188rem] sm:text-[4rem] lg:text-[6.188rem]  mr-3 ${inView1 ? "lazy-animate" : ""}`}
+            data-lazy="fade"
+            style={{ transitionDelay: ".5s" }}
+          >
+            Up to 40% Off
+          </span>
+          <span
+            className={`text-[2.188rem] sm:text-[3rem] lg:text-[4.063rem] text-right sm:block ${inView1 ? "lazy-animate" : ""}`}
+            data-lazy="fade"
+          >
+            Delta & American Airlines
+          </span>
         </h1>
         <h2 className="text-xl sm:text-2xl text-white max-w-[350px] sm:max-w-[560px] mx-auto sm:mr-0 sm:ml-auto text-center sm:text-right leading-[1.7] mb-[1rem] text-shadow-lg">
           Exclusive discounts powered by unused airline vouchers. Real tickets. Fast support on WhatsApp.
@@ -469,19 +511,46 @@ const ShowcaseSection = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
-const AboutSection = () => {
+
+const InstructionSection = () => {
+  const [inView1, setIsInView1] = useState(false);
   return (
-    <section className="about">
+    <motion.section className="instruction " viewport={{ amount: 0.3 }} onViewportEnter={() => setIsInView1(true)}>
       <div className="container">
-        <h2 className="about-title text-5xl font-bold mb-3 ">Up to 40% Off</h2>
-        <p className="about-description text-secondary ">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur, explicabo!
-        </p>
+        <div className="shadow flex w-fit mx-auto items-center text-sm gap-2 rounded-full bg-white py-[6px] px-[13px] text-primary mb-[0.7rem]">
+          {flowerIcon}
+          Explainer Video
+        </div>
+        <h2 className="h2 text-center w-fit mx-auto relative">
+          <span className="absolute top-[-10px] left-[-20px]">{patternIcon}</span>
+          How <span className="text-primary">FlightSwap Works</span>{" "}
+        </h2>
+
+        <div
+          className={`video-wrapper bg-white shadow-xs rounded-2xl p-[5px] sm:p-[10px] ${inView1 ? "lazy-animate" : ""}`}
+          data-lazy="fade"
+        >
+          <div className="video-settings">
+            {/* <div className="inline-flex h-[25px] w-[50px] items-center justify-center gap-1 hover:bg-neutral-50 cursor-pointer rounded-sm duration-300">
+              <span>{circleIcon}</span>
+              <span className="text-gray-500">{circleIcon}</span>
+              <span className="text-gray-200">{circleIcon}</span>
+            </div> */}
+            <span className=" block py-[0.1%] px-3 mb-[0.4%]">{barIcon}</span>
+          </div>
+          <div className="h-0 pt-[56.25%] border relative rounded-2xl overflow-hidden cursor-pointer group">
+            <Image fill={true} src={VideoThumbnailImage} alt="image" className=" absolute top-0 left-0 w-full h-full" />
+            <div className="overlay absolute top-0 left-0 w-full h-full bg-[rgba(255,255,255,0.03)] duration-300 opacity-0 group-hover:opacity-100"></div>
+            <div className=" will-change-transform group-active:scale-105 group-hover:scale-110 duration-300 absolute top-1/2 left-1/2 -translate-1/2 w-[40px] h-[40px] sm:w-[120px] sm:h-[120px] rounded-full bg-white/60 flex items-center justify-center [&>svg]:w-[12px] sm:[&>svg]:w-[36px]">
+              {playIcon}
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 
