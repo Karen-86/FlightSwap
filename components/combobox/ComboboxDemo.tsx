@@ -24,6 +24,7 @@ type ComboboxDemoProps = {
   contentClassName?: string;
   defaultItems: any;
   placeholder?: string;
+  noSearch?: boolean;
   callback?: (value: object) => void;
 };
 
@@ -34,6 +35,7 @@ export function ComboboxDemo({
   contentClassName = "",
   defaultItems = [],
   placeholder = 'Select',
+  noSearch = false,
   callback = () => {},
 }: ComboboxDemoProps) {
   const [items, setItems] = useState<ItemsProps[]>([]);
@@ -86,7 +88,7 @@ export function ComboboxDemo({
           className={` p-0 combobox-demo-content w-full  max-w-[92vw] ${{ contentClassName }}`}
         >
           <Command>
-            <CommandInput placeholder="Search..." />
+            {!noSearch && <CommandInput placeholder="Search..." />}
             <CommandList>
               <CommandEmpty>No framework found.</CommandEmpty>
               <CommandGroup>

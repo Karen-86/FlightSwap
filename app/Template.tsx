@@ -416,6 +416,7 @@ const FormBlock = () => {
                     label="Passengers"
                     placeholder="Passengers"
                     defaultItems={passengers}
+                    noSearch={true}
                     callback={(item: any) => callback("passengers", item.value)}
                   />
                   <input type="text" name="passengers" defaultValue={state.passengers} className="hidden" />
