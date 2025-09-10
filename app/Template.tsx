@@ -588,7 +588,8 @@ const InstructionSection = () => {
               loop
               muted
             >
-              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+              <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+              
             </video>
             {/* {isOverlayHidden && (
               <iframe
