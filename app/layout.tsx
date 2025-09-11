@@ -3,6 +3,7 @@ import { Urbanist, Jost, Carter_One, Outfit } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import Provider from "../context";
 import "../styles/index.css";
+import {Footer} from '@/components/index'
 
 const urbanist = Urbanist({
   subsets: ["latin"],
@@ -65,6 +66,7 @@ export default function RootLayout({
       <body className={` ${urbanist.variable} ${jost.variable} ${carterOne.variable} ${outfit.variable}  antialiased`}>
         <Provider>
           {children}
+          <Footer/>
           <Toaster />
         </Provider>
       </body>

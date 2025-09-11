@@ -1,15 +1,54 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { Navbar, Footer, InputDemo, InputCalendarDemo, ComboboxDemo } from "@/components/index.js";
+import {
+  Navbar,
+  Footer,
+  InputDemo,
+  InputCalendarDemo,
+  ComboboxDemo,
+  VoucherCard,
+  ActivityCard,
+  ReasonCard,
+  TestimonialCard,
+  CarouselDemo,
+  AccordionDemo,
+} from "@/components/index.js";
 import Image from "next/image";
 import localData from "@/localData";
 import { Button } from "@/components/ui/button";
 import { useGlobalContext } from "@/context";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import useJoiValidation from "@/hooks/joi-validation/useJoiValidation";
 
-const { heroCoverImage, heroCoverMobileImage, whatsappIcon, clouds1Image, VideoSettingsImage, VideoThumbnailImage } =
-  localData.images;
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://flight-swap.vercel.app";
+
+const {
+  heroCoverImage,
+  heroCoverMobileImage,
+  whatsappIcon,
+  clouds1Image,
+  // clouds2Image,
+  VideoThumbnailImage,
+
+  Voucher1Image,
+  Voucher2Image,
+  Voucher3Image,
+
+  Activity1Image,
+  Activity2Image,
+  MarkIcon,
+
+  Reason1Icon,
+  Reason2Icon,
+  Reason3Icon,
+
+  Testimonial1Image,
+  Testimonial2Image,
+  Testimonial3Image,
+} = localData.images;
+
 const {
   arrowRightIcon,
   userIcon,
@@ -21,6 +60,7 @@ const {
   airplaneLeftIcon,
   airplaneRightIcon,
   barIcon,
+  starIcon,
 } = localData.svgs;
 
 const Template = () => {
@@ -50,8 +90,13 @@ const Template = () => {
       <main className="home-page">
         <InstructionSection />
         <VouchersSection />
+        <ActivitiesSection />
+        <WhyUsSection />
+        <RoutesSection />
+        <TestimonialsSection />
+        <FAQSection />
       </main>
-      <Footer />
+      {/* <Footer /> */}
       <style>
         {`
           @media(min-width: 460px) {
@@ -76,7 +121,14 @@ const Template = () => {
 };
 
 const FormBlock = () => {
-  const { sendEmail } = useGlobalContext();
+  type ValidationResult = {
+    error?: {
+      details: {
+        path: string[];
+        message: string;
+      }[];
+    };
+  };
 
   const [state, setState] = useState({
     fromCountry: "",
@@ -88,6 +140,73 @@ const FormBlock = () => {
     phone: "",
     email: "",
   });
+
+  const [wasSubmitted, setWasSubmitted] = useState(false);
+  const [result, setResult] = useState<ValidationResult>({});
+  const [errorMessages, setErrorMessages] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { validateContact } = useJoiValidation();
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { error } = validateContact(state);
+    console.log(errorMessages, "ddd");
+    if (!error) {
+      console.log("Submit");
+      const init = () => {
+        const form = e.target as any;
+
+        const from = form.from?.value?.trim();
+        const to = form.to?.value?.trim();
+        const departure = form.departure?.value?.trim();
+        const _return = form.return?.value?.trim();
+        const passengers = form.passengers?.value?.trim();
+        const fullName = form.fullName?.value?.trim();
+        const phone = form.phone?.value?.trim();
+        const email = form.email?.value?.trim();
+        const image = form.image?.defaultValue;
+        console.log(departure, 'departure')
+        const CONTENT =
+          (from ? `<p><strong>From</strong>: ${from}</p>` : "") +
+          (to ? `<p><strong>To</strong>: ${to}</p>` : "") +
+          (departure ? `<p><strong>Departure</strong>: ${departure}</p>` : "") +
+          (_return ? `<p><strong>Return</strong>: ${_return}</p>` : "") +
+          (passengers ? `<p><strong>Passengers</strong>: ${passengers}</p>` : "") +
+          (fullName ? `<p><strong>Full Name</strong>: ${fullName}</p>` : "") +
+          (phone ? `<p><strong>Phone</strong>: ${phone}</p>` : "") +
+          (email ? `<p><strong>Email</strong>: ${email}</p>` : "") +
+          (image ? `<img src="${image}" width='200' style="height:auto;"  />` : "");
+        form.CONTENT.value = CONTENT;
+
+        sendEmail({
+          event: e,
+          service: "service_7ztktwq",
+          template: "template_kc4c9uc",
+          form: e.target,
+          public_key: "-sDfzp5WqUVPrUP6-",
+          setIsLoading: setIsLoading,
+        });
+      };
+      init();
+    }
+    if (!error) return;
+    setWasSubmitted(true);
+  };
+
+  useEffect(() => setResult(validateContact(state)), [state]);
+
+  useEffect(() => {
+    if (!wasSubmitted) return;
+    const errors: Record<string, string> = {};
+    result?.error?.details.forEach((item) => {
+      if (errors[item.path[0]]) return;
+      errors[item.path[0]] = item.message;
+    });
+    setErrorMessages(errors);
+  }, [result, wasSubmitted]);
+
+  const { sendEmail } = useGlobalContext();
 
   const [countries] = useState([
     { id: "1", label: "Afghanistan", value: "Afghanistan" },
@@ -292,8 +411,6 @@ const FormBlock = () => {
     { label: "Infant", value: "infant" },
   ]);
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setState((prev) => ({
@@ -303,7 +420,7 @@ const FormBlock = () => {
   };
 
   const callback = (key = "", value = "") => {
-    setState((prev) => ({ ...prev, [key]: value }));
+    setState((prev) => ({ ...prev, [key]: value.toString() }));
   };
 
   const [active, setActive] = useState("left");
@@ -339,46 +456,20 @@ const FormBlock = () => {
               </div>
 
               <form
-                className=""
                 id="contact-form-2 "
                 action="#/"
                 method="POST"
-                onSubmit={(e) => {
-                  // EXTRA start
-                  const form = e.target as any;
-
-                  const name = form.name?.value?.trim();
-                  const submittedEmail = form.submitted_email?.value?.trim();
-                  const phone = form.phone?.value?.trim();
-                  const description = form.description?.value?.trim();
-                  const image = form.image?.defaultValue;
-
-                  const CONTENT =
-                    (name ? `<p><strong>Name</strong>: ${name}</p>` : "") +
-                    (submittedEmail ? `<p><strong>Email</strong>: ${submittedEmail}</p>` : "") +
-                    (phone ? `<p><strong>Phone</strong>: ${phone}</p>` : "") +
-                    (description ? `<p><strong>Description</strong>: ${description}</p>` : "") +
-                    (image ? `<img src="${image}" width='90' height='90' />` : "");
-                  form.CONTENT.value = CONTENT;
-                  // EXTRA end
-
-                  sendEmail({
-                    event: e,
-                    service: "service_m0znoirddddddddddddddd",
-                    template: "template_u1lzg8dddddddddddddd",
-                    form: e.target,
-                    public_key: "XROQkLsbKgfMPUjh6ddddddddddddddddd",
-                    setIsLoading: setIsLoading,
-                  });
-                }}
+                className={`${wasSubmitted ? "was-submitted" : ""}`}
+                onSubmit={onSubmit}
               >
-                <div className="field-group text-left grid gap-x-[10px] gap-y-[20px] mb-[1.5rem]">
+                <div className="field-group text-left grid gap-x-[10px] gap-y-[15px] mb-[2.5rem]">
                   <ComboboxDemo
                     className="!mb-0"
                     label="From"
                     placeholder="Country"
                     defaultItems={countries}
                     callback={(item: any) => callback("fromCountry", item.value)}
+                    errorMessage={errorMessages.fromCountry}
                   />
                   <input type="text" name="from" defaultValue={state.fromCountry} className="hidden" />
 
@@ -388,28 +479,29 @@ const FormBlock = () => {
                     placeholder="Country"
                     defaultItems={countries}
                     callback={(item: any) => callback("toCountry", item.value)}
+                    errorMessage={errorMessages.toCountry}
                   />
                   <input type="text" name="to" defaultValue={state.toCountry} className="hidden" />
 
                   <InputCalendarDemo
                     className="!mb-0"
-                    name="departure"
                     placeholder="Date"
                     label="Departure"
                     triggerClassName="[&>svg]:stroke-primary"
-                    callback={(value: any) => callback("departure", value)}
+                    callback={(value: any) => callback("departure",value )}
+                    errorMessage={errorMessages.departure}
                   />
-                  <input type="text" name="to" defaultValue={state.departure} className="hidden" />
+                  <input type="text" name="departure" defaultValue={state.departure} className="hidden" />
 
                   <InputCalendarDemo
                     className={`!mb-0 duration-300 ${active == "right" ? "opacity-30 pointer-events-none" : ""}`}
-                    name="return"
                     placeholder="Date"
                     label="Return"
                     triggerClassName="[&>svg]:stroke-primary"
                     callback={(value: any) => callback("return", value)}
+                    errorMessage={errorMessages.return}
                   />
-                  <input type="text" name="to" defaultValue={state.return} className="hidden" />
+                  <input type="text" name="return" defaultValue={state.return} className="hidden" />
 
                   <ComboboxDemo
                     className="!mb-0"
@@ -418,6 +510,8 @@ const FormBlock = () => {
                     defaultItems={passengers}
                     noSearch={true}
                     callback={(item: any) => callback("passengers", item.value)}
+                    errorMessage={errorMessages.passengers}
+                    // inputClassName={errorMessages.fullName ? "is-invalid" : "is-valid"}
                   />
                   <input type="text" name="passengers" defaultValue={state.passengers} className="hidden" />
 
@@ -430,6 +524,8 @@ const FormBlock = () => {
                     value={state.fullName}
                     callback={handleOnChange}
                     endIcon={userIcon}
+                    errorMessage={errorMessages.fullName}
+                    inputClassName={errorMessages.fullName ? "is-invalid" : "is-valid"}
                   />
 
                   <InputDemo
@@ -441,6 +537,8 @@ const FormBlock = () => {
                     value={state.phone}
                     callback={handleOnChange}
                     endIcon={phoneIcon}
+                    errorMessage={errorMessages.phone}
+                    inputClassName={errorMessages.phone ? "is-invalid" : "is-valid"}
                   />
                   <InputDemo
                     label="Email"
@@ -451,12 +549,14 @@ const FormBlock = () => {
                     value={state.email}
                     callback={handleOnChange}
                     endIcon={emailIcon}
+                    errorMessage={errorMessages.email}
+                    inputClassName={errorMessages.email ? "is-invalid" : "is-valid"}
                   />
                 </div>
                 <input
                   type="text"
                   name="image"
-                  defaultValue="https://flightswap.vercel.app/assets/images/logo.png"
+                  defaultValue={`${siteUrl}/assets/images/logo.png`}
                   className="hidden"
                 />
                 <input type="text" name="CONTENT" className="hidden" />
@@ -549,20 +649,22 @@ const InstructionSection = () => {
 
   return (
     <motion.section className="instruction !pb-0" viewport={{ amount: 0.3 }} onViewportEnter={() => setIsInView1(true)}>
-      <div className="absolute hidden xl:block w-[7vw] [@media(min-width:1910px)]:w-auto [&>svg]:w-full">{airplaneLeftIcon}</div>
-      <div className="absolute hidden xl:block w-[7vw] [@media(min-width:1910px)]:w-auto [&>svg]:w-full right-0">
-        {airplaneRightIcon}
+      <div className="absolute hidden [@media(min-width:1300px)]:block w-[7vw] [@media(min-width:1910px)]:w-auto [&>svg]:w-full">
+        {airplaneLeftIcon}
       </div>
 
       <div className="container">
-        <div className="shadow flex w-fit mx-auto items-center text-sm gap-2 rounded-full bg-white py-[6px] px-[13px] text-primary mb-[0.7rem]">
+        <h2 className="shadow flex w-fit mx-auto items-center text-sm gap-2 rounded-full bg-white py-[6px] px-[13px] text-primary mb-[0.7rem]">
           {flowerIcon}
           Explainer Video
-        </div>
-        <h2 className="h2 text-center w-fit mx-auto relative">
-          <span className="absolute top-[-10px] left-[-20px]">{patternIcon}</span>
-          How <span className="text-primary">FlightSwap Works</span>{" "}
         </h2>
+        <div className="h2 text-center w-fit mx-auto relative">
+          <span className="[&>svg]:-mb-4 [&>svg]:-ml-4  sm:[&>svg]:-mb-4 sm:[&>svg]:-ml-6 [&>svg]:w-5 sm:[&>svg]:w-7 inline-block mr-1 sm:mr-2">
+            {patternIcon}
+            How
+          </span>
+          <span className="text-primary">FlightSwap Works</span>{" "}
+        </div>
 
         <div
           className={`video-wrapper bg-white shadow-xs rounded-2xl p-[5px] sm:p-[12px] ${inView1 ? "lazy-animate" : ""}`}
@@ -589,7 +691,6 @@ const InstructionSection = () => {
               muted
             >
               <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
-              
             </video>
             {/* {isOverlayHidden && (
               <iframe
@@ -626,14 +727,490 @@ const InstructionSection = () => {
 };
 
 const VouchersSection = () => {
+  const vouchers = [
+    {
+      image: Voucher1Image,
+      title: "Travelers sell us unused vouchers",
+      description: "Lorem ipsum dolor sit amet consectetur. In ac tincidunt erat turpis in. Felis facilisis pellentesque",
+    },
+    {
+      image: Voucher2Image,
+      title: "We convert them into airline tickets",
+      description: "Lorem ipsum dolor sit amet consectetur. In ac tincidunt erat turpis in. Felis facilisis pellentesque",
+    },
+    {
+      image: Voucher3Image,
+      title: "You fly cheaper — up to 40% off",
+      description: "Lorem ipsum dolor sit amet consectetur. In ac tincidunt erat turpis in. Felis facilisis pellentesque",
+    },
+  ];
+
   return (
-    <section>
+    <section className="relative">
+      <div className="absolute hidden [@media(min-width:1300px)]:block w-[7vw] [@media(min-width:1910px)]:w-auto [&>svg]:w-full right-0 top-[-150px]">
+        {airplaneRightIcon}
+      </div>
       <div className="container">
-        <h2 className="h2 text-center w-fit mx-auto relative !text-xl sm:!text-3xl max-w-[830px] leading-[1.6]">
-          We buy unused vouchers before they <span className="text-primary">
-            expire and turn them into real flight savings
-          </span>
+        <h2 className="h2 text-center w-fit mx-auto relative !text-xl sm:!text-3xl max-w-[830px] leading-[1.6] !mb-[1rem] sm:!mb-[2rem]">
+          We buy unused vouchers before they <span className="text-primary">expire and turn them into real flight savings</span>
         </h2>
+
+        <div className="card-group flex gap-[18px] lg:gap-[30px] flex-wrap justify-center items-start">
+          {vouchers.map((voucher, index) => {
+            return <VoucherCard key={index} {...voucher} index={index} className={index == 1 ? "lg:mt-[32px]" : ""} />;
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ActivitiesSection = () => {
+  const activities = [
+    {
+      image: Activity1Image,
+      title: "Buy Discounted Tickets",
+      description: "Delta & American Airlines — Economy, Premium Economy, and Business",
+    },
+    {
+      image: Activity2Image,
+      title: "Sell Your Voucher",
+      description: "Turn your soon-to-expire voucher into instant cash",
+    },
+  ];
+
+  return (
+    <section
+      className={`relative bg-[length:100%_auto] bg-top bg-no-repeat bg-none sm:bg-[url('/assets/images/rest/clouds-2.png')]`}
+    >
+      <div className="container">
+        <h2 className="shadow flex w-fit mx-auto items-center text-sm gap-2 rounded-full bg-white py-[6px] px-[13px] text-primary ">
+          {flowerIcon}
+          Choose Your Path
+        </h2>
+        <div className="h2 text-center w-fit mx-auto relative">
+          <span className="[&>svg]:-mb-4 [&>svg]:-ml-4  sm:[&>svg]:-mb-4 sm:[&>svg]:-ml-6 [&>svg]:w-5 sm:[&>svg]:w-7 inline-block mr-1 sm:mr-2">
+            {patternIcon}
+            What do you
+          </span>
+          <span className="text-primary">want to do today?</span>
+        </div>
+
+        <div className="card-group flex gap-[24px] flex-wrap">
+          <ActivityCard
+            {...activities[0]}
+            index={0}
+            button={
+              <Button className="">
+                <img className="w-[24px] h-[24px]" src={whatsappIcon} alt="" />
+                Get My Quote
+              </Button>
+            }
+          />
+          <ActivityCard
+            {...activities[1]}
+            index={1}
+            button={
+              <Button className="">
+                <img className="w-[24px] h-[24px]" src={MarkIcon} alt="" />
+                Submit voucher
+              </Button>
+            }
+          />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const WhyUsSection = () => {
+  const reasons = [
+    {
+      image: Reason1Icon,
+      title: "Real savings",
+      description: "Up to 40% vs major sites (Expedia/Kayak)",
+    },
+    {
+      image: Reason2Icon,
+      title: "Fast booking",
+      description: "Quotes within hours; e-ticket delivered to your email",
+    },
+    {
+      image: Reason3Icon,
+      title: "Safe & transparent",
+      description: "Verified deals, direct support",
+    },
+    {
+      image: Reason1Icon,
+      title: "Top airlines",
+      description: "Delta & American Airlines",
+    },
+  ];
+
+  return (
+    <section
+      className={`relative bg-[length:100%_auto] bg-top bg-no-repeat bg-none sm:bg-[url('/assets/images/rest/clouds-3.png')]`}
+    >
+      <div className="container">
+        <h2 className="shadow flex w-fit mx-auto items-center text-sm gap-2 rounded-full bg-white py-[6px] px-[13px] text-primary">
+          {flowerIcon}
+          Why FlightSwap
+        </h2>
+        <div className="h2 text-center w-fit mx-auto relative">
+          <span className="[&>svg]:-mb-4 [&>svg]:-ml-4  sm:[&>svg]:-mb-4 sm:[&>svg]:-ml-6 [&>svg]:w-5 sm:[&>svg]:w-7 inline-block mr-1 sm:mr-2">
+            {patternIcon}
+            Why travelers
+          </span>
+          <span className="text-primary"> choose FlightSwap</span>
+        </div>
+
+        <div className="card-group gap-x-[18px] gap-y-[35px] grid [@media(min-width:460px)]:grid-cols-2 xl:!grid-cols-4">
+          {reasons.map((reason, index) => {
+            return <ReasonCard key={index} {...reason} index={index} />;
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const RoutesSection = () => {
+  const [inView, setIsInView] = useState(false);
+
+  return (
+    <motion.section className={`relative  routes-section`} onViewportEnter={() => setIsInView(true)} viewport={{ amount: 0.3 }}>
+      <div className="absolute bottom-[100px] hidden [@media(min-width:1300px)]:block w-[7vw] [@media(min-width:1910px)]:w-auto [&>svg]:w-full">
+        {airplaneLeftIcon}
+      </div>
+
+      <div className="container">
+        <h2 className="shadow flex w-fit mx-auto items-center text-sm gap-2 rounded-full bg-white py-[6px] px-[13px] text-primary">
+          {flowerIcon}
+          Why FlightSwap
+        </h2>
+        <div className="h2 text-center w-fit mx-auto relative">
+          <span className="[&>svg]:-mb-4 [&>svg]:-ml-4  sm:[&>svg]:-mb-4 sm:[&>svg]:-ml-6 [&>svg]:w-5 sm:[&>svg]:w-7 inline-block mr-1 sm:mr-2">
+            {patternIcon}
+            Why travelers
+          </span>
+          <span className="text-primary"> choose FlightSwap</span>
+        </div>
+
+        <div className={`${inView ? "lazy-animate" : ""}`} data-lazy="fade-up">
+          <div className={`table-wrapper overflow-x-auto pb-[0.5rem] mb-[1.5rem] `}>
+            <table className="border-none text-left text-sm border-collapse  w-full">
+              <thead>
+                <tr>
+                  <th>
+                    <div className="border px-4 py-7 bg-white font-bold text-xl whitespace-nowrap rounded-tl-2xl">Route</div>
+                  </th>
+                  <th>
+                    <div className="border px-4 py-7 bg-white font-bold text-xl whitespace-nowrap text-center">Cabin</div>
+                  </th>
+                  <th>
+                    <div className="border px-4 py-7 bg-white font-bold text-xl whitespace-nowrap text-center">Regular Price</div>
+                  </th>
+                  <th>
+                    <div className="border px-4 py-7 bg-white font-bold text-xl whitespace-nowrap text-center">
+                      FlightSwap Price
+                    </div>
+                  </th>
+                  <th>
+                    <div className="border px-4 py-7 bg-white font-bold text-xl whitespace-nowrap text-center rounded-tr-2xl">
+                      You Save
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div className="px-4 py-7 bg-white border font-semibold whitespace-nowrap ">New York → Miami</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border font-semibold text-center whitespace-nowrap">Economy</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$280</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$169</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$111</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div className="px-4 py-7 bg-white border font-semibold whitespace-nowrap">Los Angeles → Boston</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border font-semibold text-center whitespace-nowrap">Premium Economy</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$620</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$399</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$221</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div className="px-4 py-7 bg-white border font-semibold whitespace-nowrap">Dallas → San Francisco</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border font-semibold text-center whitespace-nowrap">Economy</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$340</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$205</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$135</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div className="px-4 py-7 bg-white border font-semibold whitespace-nowrap rounded-bl-2xl">
+                      Chicago → New York
+                    </div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border font-semibold text-center whitespace-nowrap">Business</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$1,150</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center">$720</div>
+                  </td>
+                  <td>
+                    <div className="px-4 py-7 bg-white border text-primary font-semibold text-center  rounded-br-2xl">$430</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex justify-center">
+            <Button className="" variant="default">
+              Get a personal quote {arrowRightIcon}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </motion.section>
+  );
+};
+
+const TestimonialsSection = () => {
+  const [inView, setIsInView] = useState(false);
+  const testimonials = [
+    {
+      image: Testimonial1Image,
+      description: "“Saved $230 on my Miami trip. Booking was smooth and legit.”",
+      fullName: "Sarah M., NYC",
+      date: "2 days ago",
+    },
+    {
+      image: Testimonial2Image,
+      description: "“I sold my unused voucher in one day and got paid fast.”",
+      fullName: "Kevin L., Dallas",
+      date: "2 days ago",
+    },
+    {
+      image: Testimonial3Image,
+      description: "“Got Premium Economy for less than regular Economy. Crazy.”",
+      fullName: "Amanda R., LA",
+      date: "2 days ago",
+    },
+    {
+      image: Testimonial1Image,
+      description: "“Saved $230 on my Miami trip. Booking was smooth and legit.”",
+      fullName: "Sarah M., NYC",
+      date: "2 days ago",
+    },
+    {
+      image: Testimonial2Image,
+      description: "“I sold my unused voucher in one day and got paid fast.”",
+      fullName: "Kevin L., Dallas",
+      date: "2 days ago",
+    },
+    {
+      image: Testimonial3Image,
+      description: "“Got Premium Economy for less than regular Economy. Crazy.”",
+      fullName: "Amanda R., LA",
+      date: "2 days ago",
+    },
+  ];
+
+  const isMobile = useIsMobile();
+
+  return (
+    <motion.section
+      className={`relative overflow-hidden bg-[length:100%_auto] bg-top bg-no-repeat bg-none sm:bg-[url('/assets/images/rest/clouds-2.png')]`}
+      onViewportEnter={() => setIsInView(true)}
+      viewport={{ amount: 0.3 }}
+    >
+      <div className="container">
+        <h2 className="shadow flex w-fit mx-auto items-center text-sm gap-2 rounded-full bg-white py-[6px] px-[13px] text-primary">
+          {flowerIcon}
+          Testimonials
+        </h2>
+        <div className="h2 text-center w-fit mx-auto relative">
+          <span className="[&>svg]:-mb-4 [&>svg]:-ml-4  sm:[&>svg]:-mb-4 sm:[&>svg]:-ml-6 [&>svg]:w-5 sm:[&>svg]:w-7 inline-block mr-1 sm:mr-2">
+            {patternIcon}
+            Loved by
+          </span>
+          <span className="text-primary">smart flyers</span>
+        </div>
+
+        <div className="flex gap-x-3 gap-y-1 items-center justify-center flex-wrap mb-[2.5rem]">
+          <h5 className="text-bold uppercase font-bold font-outfit">TripAdvisor</h5>
+          <span>4,9</span>
+          <div className="flex gap-1 [&>svg]:w-3">
+            {starIcon} {starIcon}
+            {starIcon}
+            {starIcon}
+            {starIcon}
+          </div>
+          <span>Based on 28 reviews</span>
+        </div>
+
+        {/* <div className="card-group flex gap-10">
+          {testimonials.map((item,index) => {
+            return <TestimonialCard key={index} {...item} />
+          })}
+          
+        </div> */}
+
+        <div className={`${inView ? "lazy-animate" : ""} `} data-lazy="fade-up">
+          <CarouselDemo
+            className="custom-carousel"
+            autoplay={true}
+            items={testimonials}
+            loop={true}
+            align={isMobile ? "center" : "start"}
+          >
+            {({ item, index }) => <TestimonialCard {...item} index={index} />}
+          </CarouselDemo>
+        </div>
+      </div>
+    </motion.section>
+  );
+};
+
+const FAQSection = () => {
+  const [inView1, setIsInView1] = useState(false);
+  const [inView2, setIsInView2] = useState(false);
+
+  const buyersFAQ = [
+    {
+      trigger: "Why cheaper than other sites?",
+      content:
+        "Lorem ipsum dolor sit amet consectetur. Cras lectus consectetur purus phasellus. Porta et at egestas ut sit pellentesque. Nulla sagittis nulla imperdiet nisi placerat felis libero vel sit. Eu at.",
+    },
+    {
+      trigger: "Is it safe and legal?",
+      content:
+        "Lorem ipsum dolor sit amet consectetur. Cras lectus consectetur purus phasellus. Porta et at egestas ut sit pellentesque. Nulla sagittis nulla imperdiet nisi placerat felis libero vel sit. Eu at.",
+    },
+    {
+      trigger: "How fast do I get my ticket?",
+      content:
+        "Lorem ipsum dolor sit amet consectetur. Cras lectus consectetur purus phasellus. Porta et at egestas ut sit pellentesque. Nulla sagittis nulla imperdiet nisi placerat felis libero vel sit. Eu at.",
+    },
+    {
+      trigger: "What payment methods do you accept?",
+      content:
+        "Lorem ipsum dolor sit amet consectetur. Cras lectus consectetur purus phasellus. Porta et at egestas ut sit pellentesque. Nulla sagittis nulla imperdiet nisi placerat felis libero vel sit. Eu at.",
+    },
+  ];
+  const sellersFAQ = [
+    {
+      trigger: "What vouchers do you buy?",
+      content:
+        "Lorem ipsum dolor sit amet consectetur. Cras lectus consectetur purus phasellus. Porta et at egestas ut sit pellentesque. Nulla sagittis nulla imperdiet nisi placerat felis libero vel sit. Eu at.",
+    },
+    {
+      trigger: "How do I get paid?",
+      content:
+        "Lorem ipsum dolor sit amet consectetur. Cras lectus consectetur purus phasellus. Porta et at egestas ut sit pellentesque. Nulla sagittis nulla imperdiet nisi placerat felis libero vel sit. Eu at.",
+    },
+    {
+      trigger: "What if my voucher is close to expiring?",
+      content:
+        "Lorem ipsum dolor sit amet consectetur. Cras lectus consectetur purus phasellus. Porta et at egestas ut sit pellentesque. Nulla sagittis nulla imperdiet nisi placerat felis libero vel sit. Eu at.",
+    },
+  ];
+
+  return (
+    <section className={``}>
+      <div className="container">
+        <h2 className="shadow flex w-fit mx-auto items-center text-sm gap-2 rounded-full bg-white py-[6px] px-[13px] text-primary">
+          {flowerIcon}
+          FAQ
+        </h2>
+        <div className="h2 text-center w-fit mx-auto relative">
+          <span className="[&>svg]:-mb-4 [&>svg]:-ml-4 sm:[&>svg]:-mb-4 sm:[&>svg]:-ml-6 [&>svg]:w-5 sm:[&>svg]:w-7 inline-block mr-1 sm:mr-2">
+            {patternIcon}
+            Have
+          </span>
+          <span className="text-primary">any Questions ?</span>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-[70px]">
+          <div className="col flex-1 lg:max-w-[390px]">
+            <h3 className="font-carter-one text-xl sm:text-4xl mb-[1rem] text-center lg:text-start">For Buyers</h3>
+            <p className="p1 text-center lg:text-start">
+              Lorem ipsum dolor sit amet consectetur. Cras lectus consectetur purus phasellus. Porta et at egestas ut sit
+              pellentesque. Nulla sagittis nulla imperdiet nisi placerat felis libero vel sit. Eu at.
+            </p>
+            <div className="flex justify-center lg:justify-start">
+              <Button className="" variant="default">
+                Get my quote {arrowRightIcon}
+              </Button>
+            </div>
+          </div>
+          <motion.div
+            className={`col flex-1 ${inView1 ? "lazy-animate" : ""}`}
+            onViewportEnter={() => setIsInView1(true)}
+            viewport={{ amount: 0.3 }}
+            data-lazy="fade-up"
+          >
+            <AccordionDemo triggerClassName="" items={buyersFAQ} />
+          </motion.div>
+        </div>
+        <br />
+        <br />
+
+        <div className="flex flex-col lg:flex-row gap-[70px]">
+          <div className="col flex-1 lg:max-w-[390px] lg:order-1">
+            <h3 className="font-carter-one text-xl sm:text-4xl mb-[1rem] text-center lg:text-start">For Sellers</h3>
+            <p className="p1 text-center lg:text-start">
+              Lorem ipsum dolor sit amet consectetur. Cras lectus consectetur purus phasellus. Porta et at egestas ut sit
+              pellentesque. Nulla sagittis nulla imperdiet nisi placerat felis libero vel sit. Eu at.
+            </p>
+            <div className="flex justify-center lg:justify-start">
+              <Button className="" variant="default">
+                Sell my voucher {arrowRightIcon}
+              </Button>
+            </div>
+          </div>
+          <motion.div
+            className={`col flex-1 ${inView2 ? "lazy-animate" : ""}`}
+            onViewportEnter={() => setIsInView2(true)}
+            viewport={{ amount: 0.3 }}
+            data-lazy="fade-up"
+          >
+            <AccordionDemo triggerClassName="" items={sellersFAQ} />
+          </motion.div>
+        </div>
       </div>
     </section>
   );

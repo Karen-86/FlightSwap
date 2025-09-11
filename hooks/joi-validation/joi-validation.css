@@ -1,0 +1,20 @@
+.valid-feedback,
+.invalid-feedback {
+    display: none;
+}
+
+.was-submitted {
+    .is-valid {
+        /* @apply text-success; */
+        & ~ .valid-feedback {
+            display: block;
+        }
+    }
+    .is-invalid {
+        
+        @apply border-destructive/40;
+        & ~ .invalid-feedback {
+            display: block;
+        }
+    }
+}

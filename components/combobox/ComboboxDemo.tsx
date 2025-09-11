@@ -24,6 +24,7 @@ type ComboboxDemoProps = {
   contentClassName?: string;
   defaultItems: any;
   placeholder?: string;
+    errorMessage?: string;
   noSearch?: boolean;
   callback?: (value: object) => void;
 };
@@ -35,6 +36,7 @@ export function ComboboxDemo({
   contentClassName = "",
   defaultItems = [],
   placeholder = 'Select',
+    errorMessage = "",
   noSearch = false,
   callback = () => {},
 }: ComboboxDemoProps) {
@@ -71,7 +73,7 @@ export function ComboboxDemo({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full !py-[22px] !px-[13px] rounded-full text-sm font-normal justify-between"
+            className={`w-full !py-[22px] !px-[13px] rounded-full text-sm font-normal justify-between ${errorMessage ? 'border-destructive/40': ""}`}
           >
             {selectedItem?.startIcon && <span className="w-[16px] ">{selectedItem.startIcon}</span>}
             <span className={`truncate  flex-1 text-left ${!value ? "text-secondary" : ""}`}>
@@ -114,6 +116,7 @@ export function ComboboxDemo({
           </Command>
         </PopoverContent>
       </Popover>
+      {/* {errorMessage && <div className="text-destructive/90 absolute text-xs mt-1">{errorMessage}</div>} */}
     </div>
   );
 }

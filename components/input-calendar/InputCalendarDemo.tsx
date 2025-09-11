@@ -38,6 +38,7 @@ export function InputCalendarDemo({
   inputClassName = "",
   contentClassName = "",
   placeholder = "Select",
+  errorMessage = '',
   callback = () => {},
   defaultValue = undefined,
   ...props
@@ -90,7 +91,7 @@ export function InputCalendarDemo({
                 value={value}
                 placeholder={placeholder}
                 readOnly
-                className={`text-sm bg-background !py-[22px] !px-[13px] rounded-full cursor-pointer pr-10`}
+                className={`text-sm bg-background !py-[22px] !px-[13px] rounded-full cursor-pointer pr-10 ${errorMessage ? 'border-destructive/40': ""}`}
                 onClick={() => setOpen(true)}
               />
               {/* <CalendarCheck className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground cursor-pointer" /> */}
@@ -128,6 +129,8 @@ export function InputCalendarDemo({
           </PopoverContent>
         </Popover>
       </div>
+
+          {/* {errorMessage && <div className="text-destructive/90 absolute text-xs mt-1">{errorMessage}</div>} */}
     </div>
   );
 }

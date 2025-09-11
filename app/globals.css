@@ -10,7 +10,7 @@
   --font-jost: var(--font-jost), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-urbanist: var(--font-urbanist), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-carter-one: var(--font-carter-one), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  /* --font-outfit: var(--font-outfit), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; */
+  --font-outfit: var(--font-outfit), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   /* --font-mono: var(--font-geist-mono); */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -55,11 +55,10 @@
   --color-custom-green: rgb(0, 128, 0); */
   --color-black: var(--black);
   --color-secondary: var(--secondary);
+  --color-secondary-2: var(--secondary-2);
   --color-primary: var(--primary);
   --color-primary-2: var(--primary-2);
   --color-violet: var(--violet);
-
-
 }
 
 :root {
@@ -99,6 +98,7 @@
   --black: rgb(0, 0, 0);
   --black-2: rgb(29, 36, 49);
   --secondary: rgba(25, 24, 37, 0.5);
+  --secondary-2: rgba(110, 110, 120);
   --primary: rgb(28, 89, 242);
   --primary-2: rgb(38, 123, 254);
   --violet: rgb(120, 121, 230);
@@ -172,7 +172,7 @@
 
 body {
   font-family: var(--font-jost), Arial, Helvetica, sans-serif;
-  background-color: rgb(248,248,255);
+  background-color: rgb(248, 248, 255);
 }
 
 @utility container {
@@ -227,10 +227,12 @@ main > section {
 }
 
 .h2 {
-  @apply text-[1.563rem] sm:text-[3rem] font-carter-one mb-[0.438rem] sm:mb-[2rem];
+  @apply text-[1.563rem] sm:text-[3rem] font-carter-one mb-[1.5rem] sm:mb-[2rem];
 }
 
-
+.p1 {
+  @apply text-secondary-2 leading-[1.6] mb-[1rem];
+}
 
 /* LAZY LOAD */
 [data-lazy] {
@@ -243,7 +245,7 @@ main > section {
 }
 
 [data-lazy="fade-up"] {
-  transform: translate3d(0, 100px, 0) !important;
+  transform: translate3d(0, 100px, 0);
 }
 [data-lazy="fade-up-30"] {
   transform: translate3d(0, 30px, 0);
@@ -262,4 +264,22 @@ main > section {
 
 [data-transformed].lazy-animate {
   transform: translateY(-50%) !important;
+}
+
+.routes-section {
+  .table-wrapper {
+    &::-webkit-scrollbar {
+      background-color: #DBDBF2;
+      border-radius: 100px;
+      height: 15px !important;
+    }
+    &::-webkit-scrollbar-thumb {
+      border: 3px solid #DBDBF2;
+      background-color: white;
+      border-radius: 100px;
+      &:hover {
+        background-color: rgba(255,255,255,0.9);
+      }
+    }
+  }
 }

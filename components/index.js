@@ -6,3 +6,8 @@ export { default as Footer } from "./footer/Footer.tsx";
 export { InputDemo } from "./input/InputDemo.tsx";
 export { InputCalendarDemo } from "./input-calendar/InputCalendarDemo.tsx";
 export { ComboboxDemo } from "./combobox/ComboboxDemo.tsx";
+export {default as VoucherCard } from "./cards/voucher-card/VoucherCard.tsx";
+export {default as ActivityCard } from "./cards/activity-card/ActivityCard.tsx";
+export {default as ReasonCard } from "./cards/reason-card/ReasonCard.tsx";
+export { default as TestimonialCard } from "./cards/testimonial-card/TestimonialCard.tsx";
+export { CarouselDemo } from "./carousel/CarouselDemo.tsx";

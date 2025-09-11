@@ -7,4 +7,5 @@
 @import '../components/navbar/navbar.css';
 
 /* REST */
+@import '../hooks/joi-validation/joi-validation.css';
 

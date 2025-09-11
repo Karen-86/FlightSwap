@@ -50,9 +50,9 @@ export function InputDemo({
           className={`${inputClassName} text-sm bg-white rounded-full !py-[22px] !px-[13px] ${endIcon ? "!pr-10" : ""}`}
         />
         {endIcon && <div className="absolute top-1/2 -translate-y-1/2 right-3 ">{endIcon}</div>}
+        {/* <div className="valid-feedback text-green-600 text-sm">{successMessage}</div> */}
+        {/* <div className="invalid-feedback text-destructive/90 absolute text-xs mt-1">{errorMessage}</div> */}
       </div>
-      {/* <div className="valid-feedback text-green-600 text-sm">{successMessage}</div> */}
-      {/* <div className="invalid-feedback text-red-600 text-sm">{errorMessage}</div> */}
     </div>
   );
 }
